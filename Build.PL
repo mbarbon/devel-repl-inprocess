@@ -8,7 +8,7 @@ use Module::Build;
 my $build = Module::Build->new(
     module_name => 'Devel::REPL::InProcess',
     license     => 'perl',
-    script_files=> ['bin/inprocess-repl-client'],
+    script_files=> ['scripts/inprocess-repl-client'],
     requires    => {
         'perl'                  => '5.10.0',
         'AnyEvent'              => '1.0031',
