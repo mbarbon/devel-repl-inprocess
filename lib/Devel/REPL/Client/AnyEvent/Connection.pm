@@ -27,7 +27,8 @@ sub new {
 
             $weak_self->{handle} = $weak_self->{watch} = undef;
             $handle->destroy;
-            $weak_self->on_close($weak_self);
+            $weak_self->{on_close}->($weak_self)
+                if $weak_self->{on_close};
         },
         on_read     => sub {
             my ($handle) = @_;
@@ -40,7 +41,8 @@ sub new {
 
             $weak_self->{handle} = $weak_self->{watch} = undef;
             $handle->destroy;
-            $weak_self->on_close($weak_self);
+            $weak_self->{on_close}->($weak_self)
+                if $weak_self->{on_close};
         },
     );
     my $watch = AnyEvent->io(
