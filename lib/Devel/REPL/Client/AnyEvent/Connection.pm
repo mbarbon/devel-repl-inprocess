@@ -66,9 +66,15 @@ sub new {
 sub DESTROY {
     my ($self) = @_;
 
-    $self->{handle}->destroy if $self->{handle} && !$self->{handle}->destroyed;
+    $self->close;
 }
 
 sub on_close { $_[0]->{on_close} = $_[1] }
+
+sub close {
+    my ($self) = @_;
+
+    $self->{handle}->destroy if $self->{handle} && !$self->{handle}->destroyed;
+}
 
 1;

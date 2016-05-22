@@ -103,4 +103,10 @@ sub _from_to {
     die "Error during write: $!" if !defined $written || $written != $count;
 }
 
+sub close {
+    my ($self) = @_;
+
+    $self->{socket}->close if $self->{socket};
+}
+
 1;
