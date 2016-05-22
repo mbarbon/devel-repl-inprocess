@@ -10,6 +10,8 @@ use IO::Socket;
 use Term::ReadLine;
 use Scalar::Util;
 
+my $TERM;
+
 sub run_repl {
     my ($class, %args) = @_;
     my $repl = $class->new(%args);
@@ -55,7 +57,7 @@ sub create {
 
     $self->{fds}->add($self->{pty}, $self->{socket});
 
-    my $term = Term::ReadLine->new;
+    my $term = $TERM ||= Term::ReadLine->new;
     my $weak_self = $self;
 
     Scalar::Util::weaken($weak_self);
