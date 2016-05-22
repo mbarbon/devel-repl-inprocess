@@ -38,9 +38,9 @@ sub listen {
     weaken($weak_self);
     my $cb = sub { $weak_self->_new_connection($_[0]) };
     if ($self->{port}) {
-        $self->{guard} = tcp_server('127.0.0.1', $self->{port}, $cb);
+        $self->{tcp_guard} = tcp_server('127.0.0.1', $self->{port}, $cb);
     } elsif ($self->{path}) {
-        $self->{guard} = tcp_server('unix/', $self->{path}, $cb);
+        $self->{tcp_guard} = tcp_server('unix/', $self->{path}, $cb);
     }
 }
 
