@@ -25,11 +25,12 @@ sub run_repl {
 sub new {
     my ($class, %args) = @_;
     my $self = bless {
-        port    => $args{port},
-        path    => $args{path},
-        socket  => undef,
-        pty     => undef,
-        repl    => undef,
+        port        => $args{port},
+        path        => $args{path},
+        skip_levels => $args{skip_levels} // 0,
+        socket      => undef,
+        pty         => undef,
+        repl        => undef,
     }, $class;
 
     return $self;
@@ -67,6 +68,7 @@ sub create {
 
     $self->{repl} = Devel::REPL->new(term => $term);
     $self->{repl}->load_plugin('InProcess');
+    $self->{repl}->skip_levels($self->{skip_levels});
 }
 
 sub run {

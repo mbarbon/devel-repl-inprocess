@@ -29,6 +29,12 @@ has '_lexical_hints' => (
     is      => "rw",
 );
 
+has 'skip_levels' => (
+    isa     => "Int",
+    is      => "rw",
+    default => 0,
+);
+
 sub BEFORE_PLUGIN {
     my $self = shift;
     $self->load_plugin('LexEnv');
@@ -72,7 +78,8 @@ sub _sync_from_lexenv {
 
 sub _find_level_and_initialize {
     my ($self) = @_;
-    my ($found_level, $level, $evals) = (0, 0, 0);
+    my ($level, $evals, @found_level, @found_eval) = (0, 0);
+    my $skip = $self->skip_levels;
 
     for (;; ++$level) {
         my ($package, $filename, $line, $subroutine, $hasargs,
@@ -80,24 +87,30 @@ sub _find_level_and_initialize {
                 caller $level;
         last if !defined $package;
         ++$evals if $subroutine && $subroutine eq '(eval)';
-        if ($package =~ /^(?:DB|Devel::REPL)\b/) {
-            $found_level = 0;
-        } elsif (!$found_level) {
-            $found_level = $level;
+        if ($package =~ /^Devel::REPL\b/) {
+            @found_level = @found_eval = ();
+        } elsif ($package =~ /^DB\b/) {
+            # just ignore DB frames
+        } else {
+            push @found_level, $level;
+            push @found_eval, $evals;
         }
     }
 
-    die "Could not find package outside REPL/debugger" unless $found_level;
+    die "Could not find package outside REPL/debugger" unless @found_level;
+    die "Asked to skip more packages than have been forund"
+        if $skip && $skip >= @found_level;
+    my ($found_level, $found_eval) = ($found_level[$skip], $found_eval[$skip]);
 
     my ($package, $filename, $line, $subroutine, $hasargs,
         $wantarray, $evaltext, $is_require, $hints, $bitmask, $hinthash) =
             caller $found_level;
 
     # (+ 1) because caller(0) is the caller package while peek_my(0) are
-    # the lexicals in the current scope, (- $evals) because peek_my
+    # the lexicals in the current scope, (- $found_evals) because peek_my
     # skips eval frames but caller counts them
-    my $my = PadWalker::peek_my($found_level + 1 - $evals);
-    my $our = PadWalker::peek_our($found_level + 1 - $evals);
+    my $my = PadWalker::peek_my($found_level + 1 - $found_eval);
+    my $our = PadWalker::peek_our($found_level + 1 - $found_eval);
     my $lexenv = $self->lexical_environment;
     my $cxt;
 
