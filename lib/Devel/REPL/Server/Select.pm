@@ -50,7 +50,7 @@ sub create {
         );
     } elsif ($self->{path}) {
         $self->{socket} = IO::Socket::UNIX->new(
-            Local     => $self->{path},
+            Peer      => $self->{path},
         );
     }
 
