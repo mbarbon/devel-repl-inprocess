@@ -1,5 +1,9 @@
 Revision history for Devel-REPL-InProcess
 
+0.03     2016-05-26 17:33:52 CEST
+
+    - Fix connection for Unix-domain sockets
+
 0.02     2016-05-26 12:40:34 CEST
 
     - Reduce module version requirements
