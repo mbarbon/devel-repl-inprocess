@@ -1,5 +1,9 @@
 Revision history for Devel-REPL-InProcess
 
+0.02     2016-05-26 12:40:34 CEST
+
+    - Reduce module version requirements
+
 0.01     2016-05-26 10:36:03 CEST
 
     - First public release
