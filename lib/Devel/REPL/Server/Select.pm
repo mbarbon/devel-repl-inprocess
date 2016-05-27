@@ -3,7 +3,7 @@ package Devel::REPL::Server::Select;
 use strict;
 use warnings;
 
-use Devel::REPL;
+use Devel::REPL::Script;
 use IO::Pty;
 use IO::Select;
 use IO::Socket;
@@ -28,9 +28,12 @@ sub new {
         port        => $args{port},
         path        => $args{path},
         skip_levels => $args{skip_levels} // 0,
+        profile     => $args{profile},
+        rcfile      => $args{rcfile},
         socket      => undef,
         pty         => undef,
         repl        => undef,
+        repl_script => undef,
     }, $class;
 
     return $self;
@@ -67,6 +70,15 @@ sub create {
     $term->event_loop(sub { $weak_self->_shuttle_data });
 
     $self->{repl} = Devel::REPL->new(term => $term);
+    $self->{repl_script} = Devel::REPL::Script->new(
+        _repl   => $self->{repl},
+        !$self->{profile} ? () : (
+            profile     => $self->{profile},
+        ),
+        !$self->{rcfile} ? () : (
+            rcfile      => $self->{rcfile},
+        ),
+    );
     $self->{repl}->load_plugin('InProcess');
     $self->{repl}->skip_levels($self->{skip_levels});
 }
