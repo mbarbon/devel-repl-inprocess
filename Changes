@@ -1,5 +1,9 @@
 Revision history for Devel-REPL-InProcess
 
+0.05     2016-07-09 18:42:24 CEST
+
+    - Optionally force permissions for Unix-domain sockets
+
 0.04     2016-05-27 12:08:55 CEST
 
     - profile/rcfile support via Devel::REPL::Script
